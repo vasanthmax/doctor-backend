@@ -23,7 +23,9 @@ app.use(
 passportConfig(passport);
 app.use(passport.initialize());
 app.use(passport.session());
-app.get("/", (req, res) => {});
+app.get("/", (req, res) => {
+  res.send("welcome doctor");
+});
 
 app.use("/auth", ROUTES.AUTH);
 
