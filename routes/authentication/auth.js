@@ -39,7 +39,7 @@ const register = async (req, res) => {
         .then((verification) => {
           verify = verification.serviceSid;
 
-          res.json(verification.status);
+          res.status(STATUS_CODES.OK).json({ status: verification.status });
         })
         .then(() => {
           console.log(verify);
