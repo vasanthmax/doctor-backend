@@ -2,15 +2,19 @@ const bcrypt = require("bcryptjs");
 const Doctor = require("../../models/Doctor");
 const path = require("path");
 const STATUS_CODES = require("../../constants/statusCodes");
+const fs = require("fs");
 const {
   generateAccessToken,
   generateRefreshToken,
 } = require("../authentication/controller");
 const jwt = require("jsonwebtoken");
 const multer = require("multer");
-
 const storage = multer.diskStorage({
-  destination: "./uploads",
+  destination: (req, file, cb) => {
+    const path = `./uploads/${file.fieldname}`;
+    fs.mkdirSync(path, { recursive: true });
+    return cb(null, path);
+  },
   filename: function (req, file, cb) {
     cb(
       null,
@@ -42,7 +46,11 @@ const register = async (req, res) => {
       message: "Doctor Already exists",
     });
   console.log(req.files);
-  var paths = req.files.map((file) => file.path);
+  var pathCertificate = req.files.registrationcertificates.map(
+    (file) => file.path
+  );
+  var pathDoctorImage = req.files.doctorimage[0].path;
+  var pathLogo = req.files.logo[0].path;
   const newDoctor = new Doctor({
     username: req.body.username,
     dob: req.body.dob,
@@ -57,9 +65,9 @@ const register = async (req, res) => {
     summary: req.body.summary,
     registerno: req.body.registerno,
     registrationcouncil: req.body.registrationcouncil,
-    registrationcertificates: paths,
-    logo: "l",
-    doctorimage: "doctorimage",
+    registrationcertificates: pathCertificate,
+    logo: pathLogo,
+    doctorimage: pathDoctorImage,
     consulationfee: req.body.consulationfee,
     languages: req.body.languages,
     accountnumber: req.body.accountnumber,
